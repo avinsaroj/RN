@@ -1,0 +1,40 @@
+<div class="max-w-md mx-auto px-2 mt-12 mb-4">
+  <div class="space-y-6 mx-auto">
+    <div class="space-y-6">
+      <div class="text-center w-full space-y-6">
+        <%= render 'banner' %>
+        <% unless @template.deleted_at? %>
+          <p class="text-xl font-semibold text-center">You have been invited to submit a form</p>
+        <% end %>
+      </div>
+      <div class="flex items-center bg-base-200 rounded-xl p-4 mb-4">
+        <div class="flex items-center">
+          <div class="mr-3">
+            <%= svg_icon('writing_sign', class: 'w-10 h-10') %>
+          </div>
+          <div>
+            <p class="text-lg font-bold mb-1"><%= @template.name %></p>
+            <% if @template.deleted_at? %>
+              <p class="text-sm">Form has been deleted by <span class="font-semibold"><%= @template.account.name %></span>.</p>
+            <% else %>
+              <p class="text-sm">Invited by <span class="font-semibold"><%= @template.account.name %></span></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% unless @template.deleted_at? %>
+      <%= form_for @submitter, url: start_form_path(@template.slug), data: { turbo_frame: :_top }, method: :put, html: { class: 'space-y-4', onsubmit: 'event.submitter.disabled = true' } do |f| %>
+        <div class="form-control !mt-0">
+          <%= f.label :email, class: 'label' %>
+          <%= f.email_field :email, value: current_user&.email || params[:email] || @submitter.email, required: true, class: 'base-input', placeholder: 'Provide your email to start' %>
+          <%= @error_message %>
+        </div>
+        <div class="form-control">
+          <%= f.button button_title(title: 'Start', disabled_with: 'Starting'), class: 'base-button' %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<%= render 'shared/attribution', link_path: '/start' %>

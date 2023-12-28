@@ -1,0 +1,38 @@
+<div class="max-w-lg mx-auto px-2">
+  <%= render 'devise/shared/select_server' if Docuseal.multitenant? %>
+  <h1 class="text-4xl font-bold text-center mt-8">Sign In</h1>
+  <%= form_for(resource, as: resource_name, html: { class: 'space-y-6' }, data: { turbo: params[:redir].blank? }, url: session_path(resource_name)) do |f| %>
+    <% if params[:redir].present? %>
+      <%= hidden_field_tag :redir, params[:redir] %>
+    <% end %>
+    <div class="space-y-2">
+      <div class="form-control">
+        <%= f.label :email, class: 'label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: 'email', class: 'base-input' %>
+      </div>
+      <div class="form-control">
+        <%= f.label :password, class: 'label' %>
+        <%= f.password_field :password, autocomplete: 'current-password', class: 'base-input' %>
+      </div>
+    </div>
+    <div class="form-control">
+      <%= f.button button_title(title: 'Sign In', disabled_with: 'Signing In'), class: 'base-button' %>
+    </div>
+  <% end %>
+  <% if devise_mapping.omniauthable? %>
+    <div class="space-y-4">
+      <%= form_for '', url: omniauth_authorize_path(resource_name, :google_oauth2), data: { turbo: false }, method: :post do |f| %>
+        <set-timezone data-input-id="state" data-params="true"></set-timezone>
+        <%= hidden_field_tag :state, { redir: params[:redir].to_s }.compact_blank.to_query %>
+        <%= f.button button_title(title: 'Sign in with Google', icon: svg_icon('brand_google', class: 'w-6 h-6')), class: 'white-button w-full mt-4' %>
+      <% end %>
+      <%= form_for '', url: omniauth_authorize_path(resource_name, :microsoft_office365), data: { turbo: false }, method: :post do |f| %>
+        <set-timezone data-input-id="state_microsoft" data-params="true"></set-timezone>
+        <%= hidden_field_tag :state, { redir: params[:redir].to_s }.compact_blank.to_query, id: 'state_microsoft' %>
+        <%= f.button button_title(title: 'Sign in with Microsoft', icon: svg_icon('brand_microsoft', class: 'w-6 h-6')), class: 'white-button w-full' %>
+      <% end %>
+    </div>
+  <% end %>
+  <%= render 'extra_links' %>
+  <%= render 'devise/shared/links' %>
+</div>
